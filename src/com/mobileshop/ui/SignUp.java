@@ -33,8 +33,8 @@ public class SignUp extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-        jPasswordField1 = new javax.swing.JPasswordField();
+        txtUser = new javax.swing.JTextField();
+        txtPass = new javax.swing.JPasswordField();
         jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -81,7 +81,7 @@ public class SignUp extends javax.swing.JFrame {
         gridBagConstraints.ipadx = 87;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(115, 38, 0, 0);
-        getContentPane().add(jTextField1, gridBagConstraints);
+        getContentPane().add(txtUser, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
@@ -90,7 +90,7 @@ public class SignUp extends javax.swing.JFrame {
         gridBagConstraints.ipadx = 87;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(27, 38, 0, 0);
-        getContentPane().add(jPasswordField1, gridBagConstraints);
+        getContentPane().add(txtPass, gridBagConstraints);
 
         jButton3.setText("Cancel");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -136,7 +136,7 @@ public class SignUp extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JPasswordField txtPass;
+    private javax.swing.JTextField txtUser;
     // End of variables declaration//GEN-END:variables
 }

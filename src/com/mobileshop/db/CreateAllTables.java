@@ -19,28 +19,63 @@ public class CreateAllTables {
     {
         
         
-        try {
-             Connection con=DbConnection.getConnection();
+        try (Connection con=DbConnection.getConnection()){
+             
            //  System.out.println(con);
              
             if(con!=null)
             {
-                String supplierMaster="CREATE TABLE IF NOT EXISTS supplierMaster (suppId INTEGER PRIMARY KEY AUTOINCREMENT ,suppName TEXT NOT NULL,suppShopName TEXT NOT NULL,suppAddress TEXT ,suppContact TEXT NOT NULL,suppGst TEXT) ";
-                
                 Statement st=con.createStatement();
+                st.execute("PRAGMA foreign_key = NO");
+                //Table 1 SupplierMaster Table
+                String supplierMaster="CREATE TABLE IF NOT EXISTS supplierMaster (suppId INTEGER PRIMARY KEY AUTOINCREMENT ,suppName TEXT NOT NULL,suppShopName TEXT NOT NULL,suppAddress TEXT ,suppContact TEXT NOT NULL,suppGst TEXT) ";
                 st.executeUpdate(supplierMaster);
-                
+                // Table 2 UserTable 
                 String UserTable="CREATE TABLE IF NOT EXISTS UserTable (UserId INTEGER PRIMARY KEY AUTOINCREMENT ,UserName TEXT NOT NULL,Password TEXT ,Roll TEXT )";
-                
                 st.executeUpdate(UserTable);
+                // Table 3 saprePurchaseEntry
+                String sparePurchaseEntry="CREATE TABLE IF NOT EXISTS sparePurchaseEntry("
+                        +"purchaseId INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        +"billNo TEXT NOT NULL UNIQUE,"
+                        +"purchaseDate TEXT NOT NULL,"
+                        +"suppId INTEGER NOT NULL,"
+                        +"suppName TEXT NOT NULL,"
+                        +"totalQty INTEGER NOT NULL,"
+                        +"netAmount REAL NOT NULL,"
+                        +"pymentType TEXT NOT NULL CHECK(pymentType IN ('Cash','Credit','UPI','Card')),"
+                        +"createAt TEXT DEFAULT CURRENT_TIMESTAMP,"
+                        +"FOREIGN KEY (suppId) REFERENCES supplierMaster(suppId)"
+                        +")";
+                st.executeUpdate(sparePurchaseEntry);
+                // Table 4 saprePurchaseItem
+                String sparePurchaseItem="CREATE TABLE IF NOT EXISTS sparePurchaseItem("
+                        +"itemId INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        +"purchaseId INTEGER NOT NULL,"
+                        +"brand TEXT NOT NULL,"
+                        +"modelName TEXT NOT NULL,"
+                        +"partName TEXT NOT NULL,"
+                        +"partQuality TEXT ,"
+                        +"partCode TEXT,"
+                        +"qty INTEGER NOT NULL DEFAULT 1,"
+                        +"purchaseRate REAL NOT NULL,"
+                        +"amount REAL NOT NULL,"
+                        +"FOREIGN KEY(purchaseId)REFERENCES sparePurchaseEntry(purchaseId) ON DELETE CASCADE"
+                        +")";
+                 st.executeUpdate(sparePurchaseItem);
+                
+                JOptionPane.showMessageDialog(null,"All table Created Successfully");
+                
+                
             } 
             
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null,"Error"+ e.getMessage());
+            e.printStackTrace();
         }
     }
     
     public static void main(String[] args) {
+        createTables();
         
     }
     

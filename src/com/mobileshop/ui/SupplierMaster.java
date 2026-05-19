@@ -97,6 +97,7 @@ public class SupplierMaster extends javax.swing.JFrame {
 
         jLabel5.setText("Supplier GST No");
 
+        txtSuppContact.addActionListener(this::txtSuppContactActionPerformed);
         txtSuppContact.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtSuppContactKeyTyped(evt);
@@ -342,6 +343,10 @@ public class SupplierMaster extends javax.swing.JFrame {
             Toolkit.getDefaultToolkit().beep();
         }
     }//GEN-LAST:event_txtSuppContactKeyTyped
+
+    private void txtSuppContactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSuppContactActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSuppContactActionPerformed
     
         void upadate()
         {
