@@ -40,11 +40,14 @@ public class CreateAllTables {
                         +"purchaseDate TEXT NOT NULL,"
                         +"suppId INTEGER NOT NULL,"
                         +"suppName TEXT NOT NULL,"
+                        +"brandId INTEGER NOT NULL,"
+                        +"brandName TEXT NOT NULL,"
                         +"totalQty INTEGER NOT NULL,"
                         +"netAmount REAL NOT NULL,"
                         +"pymentType TEXT NOT NULL CHECK(pymentType IN ('Cash','Credit','UPI','Card')),"
                         +"createAt TEXT DEFAULT CURRENT_TIMESTAMP,"
-                        +"FOREIGN KEY (suppId) REFERENCES supplierMaster(suppId)"
+                        +"FOREIGN KEY (suppId) REFERENCES supplierMaster(suppId),"
+                        +"FOREIGN KEY (brandId) REFERENCES brandEntry(brandId)"
                         +")";
                 st.executeUpdate(sparePurchaseEntry);
                 // Table 4 saprePurchaseItem
@@ -62,6 +65,17 @@ public class CreateAllTables {
                         +"FOREIGN KEY(purchaseId)REFERENCES sparePurchaseEntry(purchaseId) ON DELETE CASCADE"
                         +")";
                  st.executeUpdate(sparePurchaseItem);
+                 
+                 
+                 //Table 5 Brand
+                 
+                 String brandEntry="CREATE TABLE IF NOT EXISTS brandEntry("
+                         +"brandId INTEGER PRIMARY KEY AUTOINCREMENT,"
+                         +"brandName TEXT NOT NULL"
+                         +")";
+                 st.executeUpdate(brandEntry);
+                 System.out.println("Brand table created succesfully!!");
+                         
                 
                 JOptionPane.showMessageDialog(null,"All table Created Successfully");
                 

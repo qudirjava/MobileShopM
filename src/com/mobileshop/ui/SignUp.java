@@ -4,20 +4,27 @@
  */
 package com.mobileshop.ui;
 
+import com.mobileshop.db.DbConnection;
+import java.sql.*;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Iphone
  */
 public class SignUp extends javax.swing.JFrame {
     
+        
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(SignUp.class.getName());
-
+       
     /**
      * Creates new form SignUp
      */
     public SignUp() {
         initComponents();
     }
+       
+       
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -58,6 +65,7 @@ public class SignUp extends javax.swing.JFrame {
         getContentPane().add(jLabel2, gridBagConstraints);
 
         jButton1.setText("Add");
+        jButton1.addActionListener(this::jButton1ActionPerformed);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -67,6 +75,7 @@ public class SignUp extends javax.swing.JFrame {
         getContentPane().add(jButton1, gridBagConstraints);
 
         jButton2.setText("Clear Field");
+        jButton2.addActionListener(this::jButton2ActionPerformed);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 4;
@@ -92,7 +101,7 @@ public class SignUp extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(27, 38, 0, 0);
         getContentPane().add(txtPass, gridBagConstraints);
 
-        jButton3.setText("Cancel");
+        jButton3.setText("Cancle");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 4;
@@ -104,6 +113,47 @@ public class SignUp extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+         String user=txtUser.getText().trim();
+         String pass=txtPass.getText();
+        if(user.isEmpty()||pass.isEmpty())
+        {
+            JOptionPane.showMessageDialog(this,"User Name and Passwor should not empty!!");
+            return;
+        }else{
+             String sql="INSERT INTO UserTable(UserName,Password)VALUES (?,?)";
+        
+             try(Connection conn=DbConnection.getConnection();
+                PreparedStatement pst=conn.prepareStatement(sql)) {
+            
+            pst.setString(1, user);
+            pst.setString(2,pass);
+           int a=pst.executeUpdate();
+           if(a>0)
+           {
+               JOptionPane.showMessageDialog(this,"SignUp Successfully !!");
+               LoginForm loginForm=new LoginForm();
+               loginForm.setVisible(true);
+               this.dispose();
+           }
+            
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,"Error"+e.getMessage());
+            e.printStackTrace();
+        }
+        }
+       
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        txtUser.setText("");
+        txtPass.setText("");
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments

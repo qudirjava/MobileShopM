@@ -13,8 +13,12 @@ import java.sql.DriverManager;
  * @author Iphone
  */
 public class DbConnection {
+    public static void main(String[] args) {
+        DbConnection.getConnection();
+    }
   
    public static Connection getConnection(){
+       
         
         Connection con=null;
         
