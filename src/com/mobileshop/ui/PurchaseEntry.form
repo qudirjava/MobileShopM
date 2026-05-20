@@ -40,22 +40,24 @@
                               <Component id="txtPurRate" min="-2" pref="81" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
-                              <EmptySpace min="358" pref="358" max="-2" attributes="0"/>
-                              <Component id="lblTotalQty" min="-2" pref="72" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" attributes="0">
-                              <EmptySpace min="358" pref="358" max="-2" attributes="0"/>
-                              <Component id="lblTotal" min="-2" pref="72" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" attributes="0">
                               <EmptySpace min="17" pref="17" max="-2" attributes="0"/>
-                              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnAddInTable" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="29" pref="29" max="-2" attributes="0"/>
                               <Component id="jButton2" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="168" pref="168" max="-2" attributes="0"/>
                               <Component id="jButton3" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="32" pref="32" max="-2" attributes="0"/>
                               <Component id="jButton4" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                              <Group type="102" alignment="1" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="lblTotalQty" min="-2" pref="114" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="-2" pref="358" max="-2" attributes="0"/>
+                                  <Component id="lblTotal" min="-2" pref="114" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
                       </Group>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -186,7 +188,7 @@
               <Component id="lblTotal" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnAddInTable" min="-2" max="-2" attributes="0"/>
                   <Component id="jButton2" min="-2" max="-2" attributes="0"/>
                   <Component id="jButton3" min="-2" max="-2" attributes="0"/>
                   <Component id="jButton4" min="-2" max="-2" attributes="0"/>
@@ -324,6 +326,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtQty">
+      <Events>
+        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtQtyKeyTyped"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel10">
       <Properties>
@@ -331,6 +336,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtPurRate">
+      <Events>
+        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtPurRateKeyTyped"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel11">
       <Properties>
@@ -411,12 +419,12 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="btnAddInTable">
       <Properties>
         <Property name="text" type="java.lang.String" value="Add"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAddInTableActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="jButton2">
@@ -436,12 +444,12 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lblTotalQty">
       <Properties>
-        <Property name="text" type="java.lang.String" value="TotalQty"/>
+        <Property name="text" type="java.lang.String" value="TotalQty:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="lblTotal">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Total"/>
+        <Property name="text" type="java.lang.String" value="Total Amount:"/>
       </Properties>
     </Component>
     <Component class="com.toedter.calendar.JDateChooser" name="jDateChooser2">

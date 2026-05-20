@@ -5,6 +5,7 @@
 package com.mobileshop.ui;
 
 import com.mobileshop.db.DbConnection;
+import java.awt.Toolkit;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import javax.swing.JOptionPane;
@@ -142,7 +143,7 @@ public class PurchaseEntry extends javax.swing.JFrame {
         txtPartCode = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         itemTable = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        btnAddInTable = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
@@ -180,7 +181,19 @@ public class PurchaseEntry extends javax.swing.JFrame {
 
         jLabel9.setText("Qty");
 
+        txtQty.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtQtyKeyTyped(evt);
+            }
+        });
+
         jLabel10.setText("Pur.Rate");
+
+        txtPurRate.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtPurRateKeyTyped(evt);
+            }
+        });
 
         jLabel11.setText("Part Code");
 
@@ -197,8 +210,8 @@ public class PurchaseEntry extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(itemTable);
 
-        jButton1.setText("Add");
-        jButton1.addActionListener(this::jButton1ActionPerformed);
+        btnAddInTable.setText("Add");
+        btnAddInTable.addActionListener(this::btnAddInTableActionPerformed);
 
         jButton2.setText("Save");
 
@@ -206,9 +219,9 @@ public class PurchaseEntry extends javax.swing.JFrame {
 
         jButton4.setText("Clear");
 
-        lblTotalQty.setText("TotalQty");
+        lblTotalQty.setText("TotalQty:");
 
-        lblTotal.setText("Total");
+        lblTotal.setText("Total Amount:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -230,20 +243,21 @@ public class PurchaseEntry extends javax.swing.JFrame {
                                 .addGap(12, 12, 12)
                                 .addComponent(txtPurRate, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(358, 358, 358)
-                                .addComponent(lblTotalQty, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(358, 358, 358)
-                                .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
                                 .addGap(17, 17, 17)
-                                .addComponent(jButton1)
+                                .addComponent(btnAddInTable)
                                 .addGap(29, 29, 29)
                                 .addComponent(jButton2)
                                 .addGap(168, 168, 168)
                                 .addComponent(jButton3)
                                 .addGap(32, 32, 32)
-                                .addComponent(jButton4)))
+                                .addComponent(jButton4))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addContainerGap()
+                                    .addComponent(lblTotalQty, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addGap(358, 358, 358)
+                                    .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
@@ -346,7 +360,7 @@ public class PurchaseEntry extends javax.swing.JFrame {
                 .addComponent(lblTotal)
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1)
+                    .addComponent(btnAddInTable)
                     .addComponent(jButton2)
                     .addComponent(jButton3)
                     .addComponent(jButton4))
@@ -357,22 +371,80 @@ public class PurchaseEntry extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnAddInTableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddInTableActionPerformed
         // TODO add your handling code here:
         Addbtn();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnAddInTableActionPerformed
+
+    
+    
+    private void txtPurRateKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPurRateKeyTyped
+        // TODO add your handling code here:
+        char c=evt.getKeyChar();
+        if(!Character.isDigit(c)){
+            evt.consume();
+            Toolkit.getDefaultToolkit().beep();
+        
+    }
+    }//GEN-LAST:event_txtPurRateKeyTyped
+
+    private void txtQtyKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtQtyKeyTyped
+        // TODO add your handling code here:
+        char c=evt.getKeyChar();
+        if(!Character.isDigit(c))
+        {
+            evt.consume();
+            Toolkit.getDefaultToolkit().beep();
+        }
+    }//GEN-LAST:event_txtQtyKeyTyped
         
         private void Addbtn()
         {
-            
-           if(cmbBrand.getSelectedIndex() == 0 || txtModel.getText().trim().isEmpty() || 
-           cmbPartName.getSelectedIndex() == 0 || txtQty.getText().trim().isEmpty() ||
-           txtPurRate.getText().trim().isEmpty()){
+            //Empty Validation 
+          validation();
+          
+          //Field se data lena 
+          String brand=cmbBrand.getSelectedItem().toString();
+          String modelName=txtModel.getText().trim();
+          String partName=cmbPartName.getSelectedItem().toString();
+          String quality=cmbQuality.getSelectedItem().toString();
+          String partCode=txtPartCode.getText().trim();
+          String qty=txtQty.getText().trim();
+          int intQty=Integer.parseInt(qty);
+          String purRate=txtPurRate.getText().trim();
+          double rate=Double.parseDouble(txtPurRate.getText());
+          double amount=intQty*rate;
+          
+          //Table main data store karna 
+          DefaultTableModel loadT=(DefaultTableModel) itemTable.getModel();
+          Object[] row={brand,modelName,partName,quality,partCode,intQty,purRate,amount};
+          loadT.addRow(row);
+          //Total amount ka colum Calculation 
+          int totalQty=0;
+          double totalAmount=0;
+            for (int i = 0; i < loadT.getRowCount(); i++) {
+                
+                totalQty +=Integer.parseInt(loadT.getValueAt(i, 5).toString());
+                totalAmount +=Double.parseDouble(loadT.getValueAt(i,7).toString());
+            }
+            lblTotalQty.setText(String.valueOf("Total Qty:"+totalQty));
+            lblTotal.setText(String.valueOf("Total Amount:"+totalAmount));
+            txtModel.setText("");
+            txtQty.setText("");
+            txtPurRate.setText("");
+            txtPartCode.setText("");
+        }
+        
+        
+        void validation()
+        {
+             if(cmbBrand.getSelectedIndex() == 0 || txtModel.getText().trim().isEmpty() || 
+              cmbPartName.getSelectedIndex() == 0 || txtQty.getText().trim().isEmpty() ||
+              txtPurRate.getText().trim().isEmpty()||txtPartCode.getText().trim().isEmpty()||cmbQuality.getSelectedIndex()==0){
             JOptionPane.showMessageDialog(this, "Brand, Model, Part, Qty, Pur Rate required hai");
             return;
         }
         }
-    
     
     /**
      * @param args the command line arguments
@@ -400,13 +472,13 @@ public class PurchaseEntry extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAddInTable;
     private javax.swing.JComboBox<String> cmbBrand;
     private javax.swing.JComboBox<String> cmbPartName;
     private javax.swing.JComboBox<String> cmbPayment;
     private javax.swing.JComboBox<String> cmbQuality;
     private javax.swing.JComboBox<String> cmbSupplier;
     private javax.swing.JTable itemTable;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
