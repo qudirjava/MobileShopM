@@ -9,6 +9,7 @@ import java.awt.Toolkit;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  *
@@ -149,7 +150,7 @@ public class PurchaseEntry extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         lblTotalQty = new javax.swing.JLabel();
         lblTotal = new javax.swing.JLabel();
-        jDateChooser2 = new com.toedter.calendar.JDateChooser();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -214,6 +215,7 @@ public class PurchaseEntry extends javax.swing.JFrame {
         btnAddInTable.addActionListener(this::btnAddInTableActionPerformed);
 
         jButton2.setText("Save");
+        jButton2.addActionListener(this::jButton2ActionPerformed);
 
         jButton3.setText("Delete");
 
@@ -268,7 +270,7 @@ public class PurchaseEntry extends javax.swing.JFrame {
                                 .addGap(6, 6, 6)
                                 .addComponent(txtBillNo, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel3)
                                 .addGap(12, 12, 12)
@@ -319,7 +321,7 @@ public class PurchaseEntry extends javax.swing.JFrame {
                         .addGap(3, 3, 3)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -358,7 +360,7 @@ public class PurchaseEntry extends javax.swing.JFrame {
                 .addComponent(lblTotalQty)
                 .addGap(18, 18, 18)
                 .addComponent(lblTotal)
-                .addGap(27, 27, 27)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnAddInTable)
                     .addComponent(jButton2)
@@ -397,6 +399,70 @@ public class PurchaseEntry extends javax.swing.JFrame {
             Toolkit.getDefaultToolkit().beep();
         }
     }//GEN-LAST:event_txtQtyKeyTyped
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        
+         // Step 1: Master entry save kar
+         int purchaseId=0;
+        String sqlMaster="INSERT INTO sparePurchaseEntry(billNo,purchaseDate,suppName,totalQty,netAmount,pymentType,createAt) VALUES(?,?,?,?,?,?,?)";
+        String sqlDetails="INSERT INTO sparePurchaseItem(purchaseId,brand,modelName,partName,partName,partQuality,partCode,qty,purchaseRate,amount) VALUES(?,?,?,?,?,?,?,?,?)";
+        
+        String totalQtyStr=lblTotalQty.getText().replace("Total Qty:","").trim();
+        String totalAmtStr=lblTotal.getText().replace("Total Amount:","").trim();
+        try(Connection conn=DbConnection.getConnection();
+            PreparedStatement pst=conn.prepareStatement(sqlMaster,Statement.RETURN_GENERATED_KEYS)) {
+            pst.setString(1,txtBillNo.getText());
+            pst.setString(2,((JTextField)jDateChooser1.getDateEditor().getUiComponent()).getText());
+            pst.setString(3,cmbSupplier.getSelectedItem().toString());
+            pst.setInt(4,Integer.parseInt(totalQtyStr));
+            pst.setDouble(5,Double.parseDouble(totalAmtStr));
+            pst.setString(6,cmbPayment.getSelectedItem().toString());
+            pst.executeUpdate();
+            
+            //PurechaseId nikalo
+            try(ResultSet rs=pst.getGeneratedKeys()) {
+                
+                if(rs.next())
+                {
+                    purchaseId=rs.getInt(1);
+                }
+            } 
+            
+           
+            try(PreparedStatement pstDetail=conn.prepareStatement(sqlDetails)){
+                
+                DefaultTableModel dtm=(DefaultTableModel)itemTable.getModel();
+                for(int i=0;i<dtm.getRowCount();i++)
+                {
+                        pstDetail.setInt(1, purchaseId);
+                        pstDetail.setString(2, dtm.getValueAt(i, 0).toString());
+                        pstDetail.setString(3, dtm.getValueAt(i, 1).toString());
+                        pstDetail.setString(4, dtm.getValueAt(i, 2).toString());
+                        pstDetail.setString(5, dtm.getValueAt(i, 3).toString());
+                        pstDetail.setString(6, dtm.getValueAt(i, 4).toString());
+                        pstDetail.setInt(7, Integer.parseInt(dtm.getValueAt(i, 5).toString()));
+                        pstDetail.setDouble(8, Double.parseDouble(dtm.getValueAt(i, 6).toString()));
+                        pstDetail.setDouble(9, Double.parseDouble(dtm.getValueAt(i, 7).toString()));
+                        
+                        pstDetail.addBatch();
+                }
+                  pstDetail.executeBatch();
+                  
+                    JOptionPane.showMessageDialog(this, "Bill Saved Successfully");
+        
+                        // Form clear karo
+                        dtm.setRowCount(0);
+                        lblTotalQty.setText("0");
+                        lblTotal.setText("0");
+            }
+            
+        } catch (Exception e) {
+            
+            JOptionPane.showMessageDialog(this,"Error" +e.getMessage());
+        }
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
         
         private void Addbtn()
         {
@@ -482,7 +548,7 @@ public class PurchaseEntry extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private com.toedter.calendar.JDateChooser jDateChooser2;
+    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

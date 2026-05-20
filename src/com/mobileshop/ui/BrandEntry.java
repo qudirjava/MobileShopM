@@ -31,15 +31,17 @@ public class BrandEntry extends javax.swing.JFrame {
         model.setRowCount(0);
         String sql="SELECT * FROM brandEntry";
         try(Connection conn=DbConnection.getConnection();
-            PreparedStatement pst=conn.prepareStatement(sql);
-                ResultSet rs=pst.executeQuery()){
-                while(rs.next()){
+            PreparedStatement pst=conn.prepareStatement(sql)){
+                try(ResultSet rs=pst.executeQuery()){
+                     while(rs.next()){
                     model.addRow(new Object[]{
                         rs.getString(1),
                         rs.getString(2)
                     });
                 }
-           
+               
+               
+            }
             
         }catch(Exception e){
             
@@ -59,6 +61,7 @@ public class BrandEntry extends javax.swing.JFrame {
         btnBrand = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        btnClose = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -80,6 +83,9 @@ public class BrandEntry extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable1);
 
+        btnClose.setText("Close");
+        btnClose.addActionListener(this::btnCloseActionPerformed);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -92,7 +98,9 @@ public class BrandEntry extends javax.swing.JFrame {
                         .addGap(42, 42, 42)
                         .addComponent(txtBrand, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(33, 33, 33)
-                        .addComponent(btnBrand))
+                        .addComponent(btnBrand)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnClose))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(28, 28, 28)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -105,7 +113,8 @@ public class BrandEntry extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(txtBrand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBrand))
+                    .addComponent(btnBrand)
+                    .addComponent(btnClose))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(194, 194, 194))
@@ -141,6 +150,11 @@ public class BrandEntry extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnBrandActionPerformed
 
+    private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_btnCloseActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -168,6 +182,7 @@ public class BrandEntry extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBrand;
+    private javax.swing.JButton btnClose;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;

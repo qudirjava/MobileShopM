@@ -6,6 +6,8 @@ package com.mobileshop.db;
 
 import  java.sql.*;
 import javax.swing.JOptionPane;
+import  java.sql.*;
+
 
 /**
  *
