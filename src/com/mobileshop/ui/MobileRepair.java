@@ -41,6 +41,7 @@ public class MobileRepair extends javax.swing.JFrame {
         btnPurchase = new javax.swing.JButton();
         btnJobEntry = new javax.swing.JButton();
         btnAvailableStock = new javax.swing.JButton();
+        btnBrand = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
 
         menu1.setLabel("File");
@@ -57,21 +58,50 @@ public class MobileRepair extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(0, 255, 255));
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btnSupplier.setText("Supplier Master ");
         btnSupplier.addActionListener(this::btnSupplierActionPerformed);
-        getContentPane().add(btnSupplier, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 130, -1, -1));
 
         btnPurchase.setText("Purchase Entry");
-        getContentPane().add(btnPurchase, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 180, 116, -1));
 
         btnJobEntry.setText("Job Entry");
-        getContentPane().add(btnJobEntry, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 116, -1));
 
         btnAvailableStock.setText("Available Stock");
-        getContentPane().add(btnAvailableStock, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 260, 116, -1));
+        btnAvailableStock.addActionListener(this::btnAvailableStockActionPerformed);
+
+        btnBrand.setText("Brand");
+        btnBrand.addActionListener(this::btnBrandActionPerformed);
         setJMenuBar(jMenuBar1);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnPurchase, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnJobEntry, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnAvailableStock, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnBrand, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnSupplier, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE))
+                .addGap(4, 4, 4))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(130, 130, 130)
+                .addComponent(btnSupplier)
+                .addGap(27, 27, 27)
+                .addComponent(btnPurchase)
+                .addGap(17, 17, 17)
+                .addComponent(btnJobEntry)
+                .addGap(17, 17, 17)
+                .addComponent(btnAvailableStock)
+                .addGap(18, 18, 18)
+                .addComponent(btnBrand)
+                .addContainerGap(128, Short.MAX_VALUE))
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -82,6 +112,19 @@ public class MobileRepair extends javax.swing.JFrame {
         SupplierMaster suppMaster=new SupplierMaster();
         suppMaster.setVisible(true);
     }//GEN-LAST:event_btnSupplierActionPerformed
+
+    private void btnBrandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBrandActionPerformed
+        // TODO add your handling code here:
+        BrandEntry brandEntry=new BrandEntry();
+        brandEntry.setVisible(true);
+    }//GEN-LAST:event_btnBrandActionPerformed
+
+    private void btnAvailableStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAvailableStockActionPerformed
+        // TODO add your handling code here:
+        AvailableStock availStock=new AvailableStock();
+        availStock.setVisible(true);
+        
+    }//GEN-LAST:event_btnAvailableStockActionPerformed
 
     /**
      * @param args the command line arguments
@@ -110,6 +153,7 @@ public class MobileRepair extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAvailableStock;
+    private javax.swing.JButton btnBrand;
     private javax.swing.JButton btnJobEntry;
     private javax.swing.JButton btnPurchase;
     private javax.swing.JButton btnSupplier;

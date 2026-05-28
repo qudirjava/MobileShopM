@@ -8,6 +8,8 @@ import com.mobileshop.db.DbConnection;
 import java.awt.Toolkit;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
@@ -16,6 +18,8 @@ import javax.swing.JTextField;
  * @author Delta
  */
 public class PurchaseEntry extends javax.swing.JFrame {
+    HashMap<String,Integer>suppMap=new HashMap<>();
+    HashMap<String,Integer>brandMap=new HashMap<>();
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PurchaseEntry.class.getName());
 
@@ -46,14 +50,17 @@ public class PurchaseEntry extends javax.swing.JFrame {
     }
     private void loadSupplier()
     {
-        String sql="SELECT suppName FROM supplierMaster ORDER BY  suppName";
+        String sql="SELECT suppId, suppName FROM supplierMaster ";
         try(Connection conn=DbConnection.getConnection();
             PreparedStatement pst=conn.prepareStatement(sql)){
             try(ResultSet rs=pst.executeQuery()){
                 cmbSupplier.removeAllItems();
-                cmbSupplier.addItem("Select Supp");
+                cmbSupplier.addItem("0-Select Supp");
                 while(rs.next()){
-                    cmbSupplier.addItem(rs.getString("suppName"));
+                    int id=rs.getInt("suppId");
+                    String name=rs.getString("suppName");
+                    cmbSupplier.addItem(id+"-"+name);
+                    suppMap.put(id+"-"+name,id);
                 }
             }
             
@@ -66,15 +73,18 @@ public class PurchaseEntry extends javax.swing.JFrame {
     }
     private void loadBrand()
     {
-        String sql="SELECT brandName FROM brandEntry ORDER BY brandName";
+        String sql="SELECT brandId, brandName FROM brandEntry ";
         try(Connection conn=DbConnection.getConnection();
                 PreparedStatement pst=conn.prepareStatement(sql)) {
                 try(ResultSet rs=pst.executeQuery()){
                     cmbBrand.removeAllItems();
-                    cmbBrand.addItem("Select Brand");
+                    cmbBrand.addItem("0-Select Brand");
                     while(rs.next())
                     {
-                        cmbBrand.addItem(rs.getString("brandName"));
+                        int id=rs.getInt("brandId");
+                       String name=rs.getString("brandName");
+                        cmbBrand.addItem(id+"-"+name);
+                        brandMap.put(id+"-"+name,id);
                     }
                 }
             
@@ -88,8 +98,10 @@ public class PurchaseEntry extends javax.swing.JFrame {
         cmbQuality.addItem("Select Quailty");
         cmbQuality.addItem("Orignal");
         cmbQuality.addItem("OG");
-        cmbQuality.addItem("Copy");
+        cmbQuality.addItem("First Copy");
         cmbQuality.addItem("Refurbish");
+        cmbQuality.addItem("Duplicate");
+        
         
         cmbPartName.removeAllItems();
         cmbPartName.addItem("Select Part Name");
@@ -99,6 +111,9 @@ public class PurchaseEntry extends javax.swing.JFrame {
         cmbPartName.addItem("Back Panel");
         cmbPartName.addItem("Wireless Strip");
         cmbPartName.addItem("Charging Flex");
+        cmbPartName.addItem("Ear Speaker");
+        cmbPartName.addItem("Ringer");
+        cmbPartName.addItem("Charging Socket");
         
         
         cmbPayment.removeAllItems();
@@ -145,7 +160,7 @@ public class PurchaseEntry extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         itemTable = new javax.swing.JTable();
         btnAddInTable = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnSave = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         lblTotalQty = new javax.swing.JLabel();
@@ -214,8 +229,8 @@ public class PurchaseEntry extends javax.swing.JFrame {
         btnAddInTable.setText("Add");
         btnAddInTable.addActionListener(this::btnAddInTableActionPerformed);
 
-        jButton2.setText("Save");
-        jButton2.addActionListener(this::jButton2ActionPerformed);
+        btnSave.setText("Save");
+        btnSave.addActionListener(this::btnSaveActionPerformed);
 
         jButton3.setText("Delete");
 
@@ -248,7 +263,7 @@ public class PurchaseEntry extends javax.swing.JFrame {
                                 .addGap(17, 17, 17)
                                 .addComponent(btnAddInTable)
                                 .addGap(29, 29, 29)
-                                .addComponent(jButton2)
+                                .addComponent(btnSave)
                                 .addGap(168, 168, 168)
                                 .addComponent(jButton3)
                                 .addGap(32, 32, 32)
@@ -363,7 +378,7 @@ public class PurchaseEntry extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnAddInTable)
-                    .addComponent(jButton2)
+                    .addComponent(btnSave)
                     .addComponent(jButton3)
                     .addComponent(jButton4))
                 .addContainerGap())
@@ -400,69 +415,121 @@ public class PurchaseEntry extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtQtyKeyTyped
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // TODO add your handling code here:
+        // Step 1: Master entry save kar
+        String suppData=cmbSupplier.getSelectedItem().toString();
+         if(suppData.equals("0-Select Supp")){
+             JOptionPane.showMessageDialog(this,"Select Supplier");
+             return;
+         }
+         int suppId=Integer.parseInt(suppData.split("-")[0]);
+         String suppName=suppData.split("-")[1];
+         
+         String brandData=cmbBrand.getSelectedItem().toString();
+         int brandId=Integer.parseInt(brandData.split("-")[0]);
+         String brandName=brandData.split("-")[1];
+                                                  
+    if(itemTable.getRowCount() == 0) {
+        JOptionPane.showMessageDialog(this, "Koi item add nahi kiya");
+        return;
+    }
+    
+    if(jDateChooser1.getDate() == null) {
+        JOptionPane.showMessageDialog(this, "Date select karo");
+        return;
+    }
+    
+     
+     
+     Connection con=null;
+    try{
+        con=DbConnection.getConnection();
+        con.setAutoCommit(false);
+         
+        Statement pragmaStmt=con.createStatement();
+        pragmaStmt.execute("PRAGMA foreign_key =ON");
         
-         // Step 1: Master entry save kar
-         int purchaseId=0;
-        String sqlMaster="INSERT INTO sparePurchaseEntry(billNo,purchaseDate,suppName,totalQty,netAmount,pymentType,createAt) VALUES(?,?,?,?,?,?,?)";
-        String sqlDetails="INSERT INTO sparePurchaseItem(purchaseId,brand,modelName,partName,partName,partQuality,partCode,qty,purchaseRate,amount) VALUES(?,?,?,?,?,?,?,?,?)";
+        String sqlMaster = "INSERT INTO sparePurchaseEntry (billNo, purchaseDate, suppId, suppName, brandId, brandName, totalQty, netAmount, pymentType, createAt) VALUES (?, ?, ?, ?,?,?, ?, ?,?, datetime('now'))";
         
-        String totalQtyStr=lblTotalQty.getText().replace("Total Qty:","").trim();
-        String totalAmtStr=lblTotal.getText().replace("Total Amount:","").trim();
-        try(Connection conn=DbConnection.getConnection();
-            PreparedStatement pst=conn.prepareStatement(sqlMaster,Statement.RETURN_GENERATED_KEYS)) {
-            pst.setString(1,txtBillNo.getText());
-            pst.setString(2,((JTextField)jDateChooser1.getDateEditor().getUiComponent()).getText());
-            pst.setString(3,cmbSupplier.getSelectedItem().toString());
-            pst.setInt(4,Integer.parseInt(totalQtyStr));
-            pst.setDouble(5,Double.parseDouble(totalAmtStr));
-            pst.setString(6,cmbPayment.getSelectedItem().toString());
-            pst.executeUpdate();
-            
-            //PurechaseId nikalo
-            try(ResultSet rs=pst.getGeneratedKeys()) {
-                
-                if(rs.next())
-                {
-                    purchaseId=rs.getInt(1);
-                }
-            } 
-            
-           
-            try(PreparedStatement pstDetail=conn.prepareStatement(sqlDetails)){
-                
-                DefaultTableModel dtm=(DefaultTableModel)itemTable.getModel();
-                for(int i=0;i<dtm.getRowCount();i++)
-                {
-                        pstDetail.setInt(1, purchaseId);
-                        pstDetail.setString(2, dtm.getValueAt(i, 0).toString());
-                        pstDetail.setString(3, dtm.getValueAt(i, 1).toString());
-                        pstDetail.setString(4, dtm.getValueAt(i, 2).toString());
-                        pstDetail.setString(5, dtm.getValueAt(i, 3).toString());
-                        pstDetail.setString(6, dtm.getValueAt(i, 4).toString());
-                        pstDetail.setInt(7, Integer.parseInt(dtm.getValueAt(i, 5).toString()));
-                        pstDetail.setDouble(8, Double.parseDouble(dtm.getValueAt(i, 6).toString()));
-                        pstDetail.setDouble(9, Double.parseDouble(dtm.getValueAt(i, 7).toString()));
-                        
-                        pstDetail.addBatch();
-                }
-                  pstDetail.executeBatch();
-                  
-                    JOptionPane.showMessageDialog(this, "Bill Saved Successfully");
+        PreparedStatement pstMaster = con.prepareStatement(sqlMaster, Statement.RETURN_GENERATED_KEYS);
         
-                        // Form clear karo
-                        dtm.setRowCount(0);
-                        lblTotalQty.setText("0");
-                        lblTotal.setText("0");
-            }
-            
-        } catch (Exception e) {
-            
-            JOptionPane.showMessageDialog(this,"Error" +e.getMessage());
+        // Step 1: Master Entry Save - Yaha suppId jaruri hai
+       
+        pstMaster.setString(1, txtBillNo.getText());
+        pstMaster.setString(2, new SimpleDateFormat("yyyy-MM-dd").format(jDateChooser1.getDate()));
+        pstMaster.setInt(3, suppId); // Ye line sabse important hai
+        pstMaster.setString(4, suppName);
+        pstMaster.setInt(5, brandId);
+        pstMaster.setString(6, brandName);
+        pstMaster.setInt(7, Integer.parseInt(lblTotalQty.getText().replace("Total Qty:", "").trim()));
+        pstMaster.setDouble(8, Double.parseDouble(lblTotal.getText().replace("Total Amount:", "").trim()));
+        pstMaster.setString(9, cmbPayment.getSelectedItem().toString());
+        pstMaster.executeUpdate();
+        
+        // purchaseId nikalo
+        ResultSet rs = pstMaster.getGeneratedKeys();
+        int purchaseId = 0;
+        if(rs.next()) {
+            purchaseId = rs.getInt(1);
         }
+       
         
-    }//GEN-LAST:event_jButton2ActionPerformed
+        // Step 2: Detail Items Save
+        String sqlDetail = "INSERT INTO sparePurchaseItem (purchaseId, brand, modelName, partName, partQuality, partCode, qty, purchaseRate, amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement pstDetail = con.prepareStatement(sqlDetail);
+        
+        DefaultTableModel dtm = (DefaultTableModel) itemTable.getModel();
+        for(int i = 0; i < dtm.getRowCount(); i++) {
+            pstDetail.setInt(1, purchaseId);
+            pstDetail.setString(2, dtm.getValueAt(i, 0).toString());  
+            pstDetail.setString(3, dtm.getValueAt(i, 1).toString());  
+            pstDetail.setString(4, dtm.getValueAt(i, 2).toString());  
+            pstDetail.setString(5, dtm.getValueAt(i, 3).toString());  
+            pstDetail.setString(6, dtm.getValueAt(i, 4).toString());  
+            pstDetail.setInt(7, Integer.parseInt(dtm.getValueAt(i, 5).toString()));  
+            pstDetail.setDouble(8, Double.parseDouble(dtm.getValueAt(i, 6).toString())); 
+            pstDetail.setDouble(9, Double.parseDouble(dtm.getValueAt(i, 7).toString()));  
+            pstDetail.addBatch();
+        }
+        pstDetail.executeBatch();
+        pstDetail.close();
+        con.commit();
+        
+       
+        JOptionPane.showMessageDialog(this, "Bill Saved Successfully");
+        
+        // Form clear karo
+        dtm.setRowCount(0);
+        lblTotalQty.setText("0");
+        lblTotal.setText("0");
+        txtBillNo.setText("");
+        
+    } catch (Exception e) {
+        try{
+            if(con!=null)
+            {
+                con.rollback();
+            }
+        }catch(SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+       
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        e.printStackTrace(); // Output me full error dekhne ke liye
+    } finally{
+        try{
+            if(con!=null)con.setAutoCommit(true);
+            if(con!=null)con.close();
+            
+        } catch(SQLException ex){
+            ex.printStackTrace();
+            
+        }
+    }
+
+    }//GEN-LAST:event_btnSaveActionPerformed
         
         private void Addbtn()
         {
@@ -539,13 +606,13 @@ public class PurchaseEntry extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddInTable;
+    private javax.swing.JButton btnSave;
     private javax.swing.JComboBox<String> cmbBrand;
     private javax.swing.JComboBox<String> cmbPartName;
     private javax.swing.JComboBox<String> cmbPayment;
     private javax.swing.JComboBox<String> cmbQuality;
     private javax.swing.JComboBox<String> cmbSupplier;
     private javax.swing.JTable itemTable;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private com.toedter.calendar.JDateChooser jDateChooser1;
