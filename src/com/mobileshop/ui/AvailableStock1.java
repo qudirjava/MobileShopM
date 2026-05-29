@@ -3,11 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.mobileshop.ui;
+
 import com.mobileshop.db.DbConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.awt.event.KeyEvent;
+import java.sql.*;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -16,23 +15,55 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Delta
  */
-public class AvailableStock extends javax.swing.JFrame {
+public class AvailableStock1 extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AvailableStock.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AvailableStock1.class.getName());
 
     /**
-     * Creates new form AvailableStock
+     * Creates new form AvailableStock1
      */
-    public AvailableStock() {
+    public AvailableStock1() {
         initComponents();
-        loadBrandFilter();
+        //loadBrandFilter();
+        
+         cmbModelFilter.removeAllItems();
+         cmbModelFilter.addItem("All"); // Model me default "All"
+    
+        loadBrandFilter();  // Brand load
+        loadStockData();    // Table load - zaruri hai
     }
+    
+    private void loadBrandFilter()
+    {
+        cmbBrandFilter.removeAllItems();
+        
+        cmbBrandFilter.addItem("All");
+        
+        String sql="SELECT DISTINCT brand FROM sparePurchaseItem WHERE brand IS NOT NULL AND brand != '' ORDER BY brand";
+        
+        try(Connection con=DbConnection.getConnection()) {
+            
+            Statement st=con.createStatement();
+            ResultSet rs=st.executeQuery(sql);
+            
+            while(rs.next()){
+                cmbBrandFilter.addItem(rs.getString("brand"));
+            }
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,"Error"+ e.getMessage());
+        
+        }
+    }
+    
+    
     private void loadStockData() {
     DefaultTableModel dtm = (DefaultTableModel) jTable1.getModel();
-    dtm.setRowCount(0);
+    dtm.setRowCount(0); // Table khali karo
     
-    String brand = cmbBrandFilter.getSelectedItem().toString();
-    String model = cmbModelFilter.getSelectedItem().toString();
+    // Combo se value uthao - Null check ke saath
+    String brand = cmbBrandFilter.getSelectedItem() == null ? "All" : cmbBrandFilter.getSelectedItem().toString();
+    String model = cmbModelFilter.getSelectedItem() == null ? "All" : cmbModelFilter.getSelectedItem().toString();
     String partName = txtPartName.getText().trim();
     
     StringBuilder sql = new StringBuilder();
@@ -40,12 +71,17 @@ public class AvailableStock extends javax.swing.JFrame {
     sql.append("SUM(qty) as purchasedQty ");
     sql.append("FROM sparePurchaseItem WHERE 1=1 ");
     
+    // Brand filter lagao
     if (!brand.equals("All")) {
         sql.append(" AND brand = '").append(brand).append("' ");
     }
+    
+    // Model filter lagao  
     if (!model.equals("All")) {
         sql.append(" AND modelName = '").append(model).append("' ");
     }
+    
+    // PartName search lagao
     if (!partName.isEmpty()) {
         sql.append(" AND partName LIKE '%").append(partName).append("%' ");
     }
@@ -58,11 +94,10 @@ public class AvailableStock extends javax.swing.JFrame {
          ResultSet rs = st.executeQuery(sql.toString())) {
         
         int sr = 1;
-        int totalRows = 0;
         while (rs.next()) {
             Vector<Object> row = new Vector<>();
             int purchased = rs.getInt("purchasedQty");
-            int sold = 0; // Baad me Sales table se lenge
+            int sold = 0; // Baad me sales table se aayega
             int available = purchased - sold;
             
             row.add(sr++);                      
@@ -76,72 +111,15 @@ public class AvailableStock extends javax.swing.JFrame {
             row.add(available);                 
             
             dtm.addRow(row);
-            totalRows++;
+             
         }
-        lblTotal.setText("Total Items: " + totalRows);
-        
+       
+        lblTotal.setText("Total Items: " + dtm.getRowCount());
     } catch (Exception e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, "Stock Load Error: " + e.getMessage());
     }
 }
-    private void loadBrandFilter() {
-    // Table ka naam check kar: Brand hai ya BrandEntry
-    String sql = "SELECT brandId, brandName FROM brandEntry ORDER BY brandName"; 
-    try(Connection con = DbConnection.getConnection();
-        PreparedStatement pst = con.prepareStatement(sql);
-        ResultSet rs = pst.executeQuery()) {
-        
-        cmbBrandFilter.removeAllItems();
-        cmbBrandFilter.addItem("All");
-        while (rs.next()) {
-            String brandName = rs.getString("brandName");
-            cmbBrandFilter.addItem(brandName); // Yahi sahi hai
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Brand Load Error: " + e.getMessage());
-    }
-}
-    private void cmbBrandFilterActionPerformed(java.awt.event.ActionEvent evt) {                                               
-    // Null check lagana zaruri hai
-    if(cmbBrandFilter.getSelectedItem() == null) {
-        return;
-    }
-    
-    cmbModelFilter.removeAllItems();
-    cmbModelFilter.addItem("All");
-    
-    String selectedBrand = cmbBrandFilter.getSelectedItem().toString();
-    
-    if(selectedBrand.equals("All")){
-        loadStockData();
-        return;
-    }
-    
-    try (Connection con = DbConnection.getConnection()) {
-        String getBrandIdSql = "SELECT brandId FROM brandEntry WHERE brandName = ?";
-        PreparedStatement pst1 = con.prepareStatement(getBrandIdSql);
-        pst1.setString(1, selectedBrand);
-        ResultSet rs1 = pst1.executeQuery();
-        
-        if(rs1.next()){
-            int brandId = rs1.getInt("brandId");
-            String sql = "SELECT modelName FROM sparePurchaseItem WHERE brandId = ? ORDER BY modelName";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setInt(1, brandId);
-            ResultSet rs = pst.executeQuery();
-            
-            while (rs.next()) {
-                cmbModelFilter.addItem(rs.getString("modelName"));
-            }
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Model Load Error: " + e.getMessage());
-    }
-    loadStockData();
-} 
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -153,6 +131,7 @@ public class AvailableStock extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         cmbBrandFilter = new javax.swing.JComboBox<>();
+        lblTotal = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         cmbModelFilter = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
@@ -163,19 +142,34 @@ public class AvailableStock extends javax.swing.JFrame {
         btnExport = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        lblTotal = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("Brand");
 
+        cmbBrandFilter.addActionListener(this::cmbBrandFilterActionPerformed);
+
+        lblTotal.setText("Total Items: 0");
+
         jLabel2.setText("Model");
 
+        cmbModelFilter.addActionListener(this::cmbModelFilterActionPerformed);
+
         jLabel3.setText("Part Name");
+
+        txtPartName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtPartNameKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPartNameKeyReleased(evt);
+            }
+        });
 
         btnSearch.setText("Search");
 
         btnReset.setText("Reset");
+        btnReset.addActionListener(this::btnResetActionPerformed);
 
         btnPrint.setText("Print");
 
@@ -193,8 +187,6 @@ public class AvailableStock extends javax.swing.JFrame {
             }
         ));
         jScrollPane1.setViewportView(jTable1);
-
-        lblTotal.setText("Total Items: 0");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -223,8 +215,8 @@ public class AvailableStock extends javax.swing.JFrame {
                                     .addComponent(btnExport))
                                 .addComponent(btnReset)
                                 .addComponent(btnPrint))))
-                    .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(83, Short.MAX_VALUE))
+                    .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(79, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -259,11 +251,74 @@ public class AvailableStock extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(39, 39, 39)
                 .addComponent(lblTotal)
-                .addContainerGap(110, Short.MAX_VALUE))
+                .addContainerGap(96, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void cmbBrandFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbBrandFilterActionPerformed
+        // TODO add your handling code here:
+        if(cmbBrandFilter.getSelectedItem()==null){
+            return;
+        }
+        cmbModelFilter.removeAllItems();
+        cmbModelFilter.addItem("All");
+        
+         String selectedBrand = cmbBrandFilter.getSelectedItem().toString();
+         
+          if(!selectedBrand.equals("All")){
+        String sql = "SELECT DISTINCT modelName FROM sparePurchaseItem WHERE brand = ? AND modelName IS NOT NULL AND modelName != '' ORDER BY modelName";
+        
+         try (Connection con = DbConnection.getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            
+            pst.setString(1, selectedBrand);
+            ResultSet rs = pst.executeQuery();
+            
+            while (rs.next()) {
+                cmbModelFilter.addItem(rs.getString("modelName"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Model Load Error: " + e.getMessage());
+        }
+    }
+          
+          // 3. Table ko refresh karo brand ke hisaab se
+            loadStockData(); 
+    }//GEN-LAST:event_cmbBrandFilterActionPerformed
+
+    private void cmbModelFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbModelFilterActionPerformed
+        // TODO add your handling code here:
+         if(cmbModelFilter.getSelectedItem() == null){
+             return;
+         }
+        loadStockData(); // Model change hote hi table refresh
+        
+       
+    }//GEN-LAST:event_cmbModelFilterActionPerformed
+
+    private void txtPartNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPartNameKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+        loadStockData(); // Enter dabate hi search
+    }
+    }//GEN-LAST:event_txtPartNameKeyPressed
+
+    private void txtPartNameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPartNameKeyReleased
+        // TODO add your handling code here:
+        loadStockData();
+    }//GEN-LAST:event_txtPartNameKeyReleased
+
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        // TODO add your handling code here:
+            cmbBrandFilter.setSelectedItem("All");
+            cmbModelFilter.removeAllItems();
+            cmbModelFilter.addItem("All");
+            txtPartName.setText("");
+            loadStockData(); // Sab reset karke table reload
+    }//GEN-LAST:event_btnResetActionPerformed
 
     /**
      * @param args the command line arguments
@@ -287,7 +342,7 @@ public class AvailableStock extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new AvailableStock().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new AvailableStock1().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

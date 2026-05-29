@@ -121,7 +121,7 @@ public class MobileRepair extends javax.swing.JFrame {
 
     private void btnAvailableStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAvailableStockActionPerformed
         // TODO add your handling code here:
-        AvailableStock availStock=new AvailableStock();
+        AvailableStock1 availStock=new AvailableStock1();
         availStock.setVisible(true);
         
     }//GEN-LAST:event_btnAvailableStockActionPerformed
