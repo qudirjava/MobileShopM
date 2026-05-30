@@ -66,6 +66,7 @@ public class MobileRepair extends javax.swing.JFrame {
         btnPurchase.addActionListener(this::btnPurchaseActionPerformed);
 
         btnJobEntry.setText("Job Entry");
+        btnJobEntry.addActionListener(this::btnJobEntryActionPerformed);
 
         btnAvailableStock.setText("Available Stock");
         btnAvailableStock.addActionListener(this::btnAvailableStockActionPerformed);
@@ -132,6 +133,12 @@ public class MobileRepair extends javax.swing.JFrame {
         PurchaseEntry pE=new PurchaseEntry();
         pE.setVisible(true);
     }//GEN-LAST:event_btnPurchaseActionPerformed
+
+    private void btnJobEntryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJobEntryActionPerformed
+        // TODO add your handling code here:
+        JobSheetEntry jSEntry=new JobSheetEntry();
+        jSEntry.setVisible(true);
+    }//GEN-LAST:event_btnJobEntryActionPerformed
 
     /**
      * @param args the command line arguments
