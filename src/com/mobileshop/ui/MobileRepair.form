@@ -66,7 +66,7 @@
                   <Component id="btnJobEntry" max="32767" attributes="0"/>
                   <Component id="btnAvailableStock" max="32767" attributes="0"/>
                   <Component id="btnBrand" alignment="0" max="32767" attributes="0"/>
-                  <Component id="btnSupplier" alignment="0" pref="116" max="32767" attributes="0"/>
+                  <Component id="btnSupplier" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
           </Group>
@@ -103,6 +103,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Purchase Entry"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPurchaseActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnJobEntry">
       <Properties>

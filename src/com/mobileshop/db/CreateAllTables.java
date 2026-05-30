@@ -78,6 +78,67 @@ public class CreateAllTables {
                  st.executeUpdate(brandEntry);
                  System.out.println("Brand table created succesfully!!");
                          
+                 
+                 
+                String customerTable = "CREATE TABLE IF NOT EXISTS CUSTOMER_MASTER("
+                        +"CustomerId INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        +"CustomerName TEXT NOT NULL,"
+                        +"MobileNo TEXT NOT NULL, Address TEXT"
+                        +")";
+                st.executeUpdate(customerTable);
+                System.out.println("Customer table created succesfully!!");
+                
+                
+                String jobTable = "CREATE TABLE IF NOT EXISTS JOB_SHEET("
+                        +"JobId INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        +"JobNo TEXT NOT NULL UNIQUE,"
+                        +"JobDate TEXT NOT NULL,"
+                        +"CustomerId INTEGER,"
+                        +"DeviceBrand TEXT,"
+                        +"DeviceModel TEXT,"
+                        +"IMEI TEXT,"
+                        +"ProblemDesc TEXT,"
+                        +"Accessories TEXT,"
+                        +"Status TEXT DEFAULT 'Pending',"
+                        +"EstimatedAmount REAL,"
+                        +"FOREIGN KEY(CustomerId) REFERENCES CUSTOMER_MASTER(CustomerId)"
+                        +")";
+                st.executeUpdate(jobTable);
+                System.out.println("Job table created succesfully!!");
+                
+                String repairDetail = "CREATE TABLE IF NOT EXISTS REPAIR_DETAILS("
+                        +"DetailId INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        +"JobId INTEGER,"
+                        +"PartName TEXT NOT NULL,"
+                        +"PartCode TEXT,"
+                        +"Quality TEXT,"
+                        +"Qty INTEGER DEFAULT 1,"
+                        +"Rate REAL,"
+                        +"Amount REAL, "
+                        +"FOREIGN KEY(JobId) REFERENCES JOB_SHEET(JobId)"
+                        +")";
+                st.executeUpdate(repairDetail);
+                System.out.println("Repair details table created succesfully!!");
+                
+                
+                String billTable = "CREATE TABLE IF NOT EXISTS BILL_MASTER("
+                        +"BillId INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        +"BillNo TEXT NOT NULL UNIQUE,"
+                        +"BillDate TEXT NOT NULL,"
+                        +"JobId INTEGER UNIQUE,"
+                        +"SubTotal REAL,"
+                        +"ServiceCharge REAL,"
+                        +"GSTAmount REAL,"
+                        +"GrandTotal REAL,"
+                        +"Discount REAL DEFAULT 0,"
+                        +"PaidAmount REAL,"
+                        +"BalanceAmount REAL,"
+                        +"FOREIGN KEY(JobId) REFERENCES JOB_SHEET(JobId)"
+                        +")";
+                
+                st.executeUpdate(billTable);
+                System.out.println("Bill  table created succesfully!!");
+                
                 
                 JOptionPane.showMessageDialog(null,"All table Created Successfully");
                 

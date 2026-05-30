@@ -63,6 +63,7 @@ public class MobileRepair extends javax.swing.JFrame {
         btnSupplier.addActionListener(this::btnSupplierActionPerformed);
 
         btnPurchase.setText("Purchase Entry");
+        btnPurchase.addActionListener(this::btnPurchaseActionPerformed);
 
         btnJobEntry.setText("Job Entry");
 
@@ -84,7 +85,7 @@ public class MobileRepair extends javax.swing.JFrame {
                     .addComponent(btnJobEntry, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnAvailableStock, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnBrand, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnSupplier, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE))
+                    .addComponent(btnSupplier, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(4, 4, 4))
         );
         layout.setVerticalGroup(
@@ -125,6 +126,12 @@ public class MobileRepair extends javax.swing.JFrame {
         availStock.setVisible(true);
         
     }//GEN-LAST:event_btnAvailableStockActionPerformed
+
+    private void btnPurchaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPurchaseActionPerformed
+        // TODO add your handling code here:
+        PurchaseEntry pE=new PurchaseEntry();
+        pE.setVisible(true);
+    }//GEN-LAST:event_btnPurchaseActionPerformed
 
     /**
      * @param args the command line arguments
